@@ -21,7 +21,7 @@ spring:
           max-active: 10
           max-idle: 10
           min-idle: 2
-      host: redis-15250.c80.us-east-1-2.ec2.redns.redis-cloud.com:15250
+      host: ${REDIS_HOST}
       port: 15250
       password: ${RDS_PWD}
   jpa:

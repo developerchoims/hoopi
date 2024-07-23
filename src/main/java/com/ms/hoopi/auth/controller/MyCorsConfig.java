@@ -15,8 +15,14 @@ public class MyCorsConfig implements WebMvcConfigurer {
 
     @Autowired
     private final AuthInterceptor authInterceptor;
-    public MyCorsConfig(AuthInterceptor authInterceptor) {
+
+    @Autowired
+    private final AdminInterceptor adminInterceptor;
+
+    public MyCorsConfig(AuthInterceptor authInterceptor
+                        , AdminInterceptor adminInterceptor) {
         this.authInterceptor = authInterceptor;
+        this.adminInterceptor = adminInterceptor;
     }
 
     @Override
@@ -36,5 +42,7 @@ public class MyCorsConfig implements WebMvcConfigurer {
                 .addPathPatterns("/api/**")
                 .excludePathPatterns("/api/hoopi/email/**", "/api/hoopi/join/**", "/api/hoopi/phone/**", "/api/hoopi/login/**");
 
+        registry.addInterceptor(adminInterceptor)
+                .addPathPatterns("/api/admin/**");
     }
 }

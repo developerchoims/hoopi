@@ -18,11 +18,11 @@ public class RedisServiceImpl implements RedisService{
         }
 
             public void saveRfrToken(String id, String token) {
-            redisTemplate.opsForValue().set(id+"_acs", token, 7, TimeUnit.DAYS); // 7일 유효기간
+            redisTemplate.opsForValue().set(id+"_rfr", token, 7, TimeUnit.DAYS); // 7일 유효기간
         }
 
             public void saveAcsToken(String id, String token) {
-            redisTemplate.opsForValue().set(id+"_rfr", token, 1, TimeUnit.HOURS); // 7일 유효기간
+            redisTemplate.opsForValue().set(id+"_acs", token, 1, TimeUnit.HOURS); // 7일 유효기간
         }
 
             public String getRfrToken(String id) {

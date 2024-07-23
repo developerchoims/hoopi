@@ -1,22 +1,20 @@
 package com.ms.hoopi.auth.controller;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.ms.hoopi.auth.AuthDto.JwtToken;
-import com.ms.hoopi.entity.Users;
 import com.ms.hoopi.join.UserRepository;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.servlet.http.HttpServletRequest;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-
 import java.util.Date;
 
 @Slf4j
@@ -32,9 +30,17 @@ public class JwtTokenUtil {
     @Autowired
     private final RedisService redisService;
 
+
     public JwtTokenUtil(UserRepository userRepository, RedisService redisService) {
         this.userRepository = userRepository;
         this.redisService = redisService;
+    }
+
+    //Key 생성하는 메소드
+    public Key createKey(){
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        Key key = Keys.hmacShaKeyFor(keyBytes);
+        return key;
     }
 
 
@@ -49,7 +55,7 @@ public class JwtTokenUtil {
                             .claim("role", usersRole)
                             .setIssuedAt(Date.from(now))
                             .setExpiration(Date.from(expiration))//1시간
-                            .signWith(SignatureAlgorithm.HS256, secretKey)
+                            .signWith(createKey(), SignatureAlgorithm.HS256)
                             .compact();
     }
 
@@ -64,16 +70,12 @@ public class JwtTokenUtil {
                             .claim("role", usersRole)
                             .setIssuedAt(Date.from(now))
                             .setExpiration(Date.from(expiration))//7시간
-                            .signWith(SignatureAlgorithm.HS256, secretKey)
+                            .signWith(createKey(), SignatureAlgorithm.HS256)
                             .compact();
     }
 
     //AcsToken, RfrToken을 새로 발급, Redis에 저장하는 메소드
     public String chkStoreTokens(String loginRfrToken) {
-        //rfrToken이 null이거나 ''라면 return false
-        if(loginRfrToken == null || loginRfrToken.isEmpty()) {
-            return null;
-        }
 
         //login한 rfrToken의 정보를 이용하기 위한 메소드
         DecodedJWT jwt = JWT.decode(loginRfrToken);
@@ -83,17 +85,13 @@ public class JwtTokenUtil {
         if(!isStoredRfrToken(loginRfrToken)){
             return null;
         } else {
-            return loginRfrToken;
+            if(redisService.getAcsToken(loginId) == null){
+                redisService.saveAcsToken(loginId, createAcs(loginId));
+                return loginRfrToken;
+            } else {
+                return loginRfrToken;
+            }
         }
-    }
-
-    // RfrToken의 유효기간 확인하기
-    private boolean isValidToken(String token) {
-        DecodedJWT jwt = JWT.decode(token);
-        if(jwt.getExpiresAt().before(new Date())){
-            return false;
-        }
-        return true;
     }
 
     //RfrToken의 id 확인하기
@@ -109,6 +107,12 @@ public class JwtTokenUtil {
             return false;
         }
         return true;
+    }
+
+    public String getRoleFromToken(String token) {
+        DecodedJWT jwt = JWT.decode(token);
+        Claim claim = jwt.getClaim("role");
+        return claim.asString();
     }
 
 }

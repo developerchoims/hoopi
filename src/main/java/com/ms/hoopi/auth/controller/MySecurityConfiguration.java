@@ -20,9 +20,7 @@ public class MySecurityConfiguration {
         log.info("시큐리티작동중?");
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/**", "api/hoopi/login").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/hoopi/**").hasRole("USER")
+                .requestMatchers("/**", "api/hoopi/**").permitAll()
                 .anyRequest().authenticated())
             .formLogin(formLogin -> formLogin.disable())
             .logout(logout -> {
