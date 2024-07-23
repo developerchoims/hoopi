@@ -2,7 +2,6 @@ package com.ms.hoopi.login;
 
 import com.ms.hoopi.auth.controller.JwtTokenUtil;
 import com.ms.hoopi.auth.controller.RedisService;
-import com.ms.hoopi.auth.controller.RedisServiceImpl;
 import com.ms.hoopi.entity.Users;
 import com.ms.hoopi.join.UserRepository;
 import com.ms.hoopi.join.UsersDto;
@@ -10,8 +9,6 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.net.http.HttpRequest;
 
 @Service
 public class LoginServiceImpl implements LoginService {

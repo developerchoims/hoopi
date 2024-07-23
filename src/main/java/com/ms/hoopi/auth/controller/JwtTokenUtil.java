@@ -3,27 +3,18 @@ package com.ms.hoopi.auth.controller;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.ms.hoopi.auth.AuthDto.JwtToken;
-import com.ms.hoopi.entity.Users;
 import com.ms.hoopi.join.UserRepository;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-
-import javax.crypto.SecretKey;
 import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-
-import java.util.Base64;
 import java.util.Date;
 
 @Slf4j

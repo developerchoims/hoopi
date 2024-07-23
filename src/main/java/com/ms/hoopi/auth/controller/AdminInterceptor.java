@@ -24,7 +24,7 @@ public class AdminInterceptor implements HandlerInterceptor {
         log.info("role인터셉터 작동중?");
         String role = "";
         Cookie[] cookies = request.getCookies();
-        String rfrToken = null;
+        String rfrToken = "";
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if ("rfrToken".equals(cookie.getName())) {

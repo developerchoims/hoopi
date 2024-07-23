@@ -26,7 +26,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(HttpServletRequest request, HttpServletResponse response, @RequestBody UsersDto users) throws IOException {
+    public ResponseEntity<String> login(@RequestBody UsersDto users) throws IOException {
         System.out.println(users);
         if(users != null){
             if(loginService.validateUser(users)){
