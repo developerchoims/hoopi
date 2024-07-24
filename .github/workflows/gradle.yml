@@ -41,7 +41,7 @@ jobs:
         docker push "${{ secrets.DOCKER_REPO }}/directors-dev"
 
     - name: Deploy to server
-      uses: appleboy/ssh-action@master
+      uses: appleboy/ssh-action@main
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ec2-user
