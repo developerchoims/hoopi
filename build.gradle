@@ -55,6 +55,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-jar {
-    enabled = false
+bootJar {
+    archiveFileName.set('app.jar')
 }
