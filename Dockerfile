@@ -1,6 +1,10 @@
 # AWS Corretto 17 기반 이미지 사용
 FROM amazoncorretto:17
 
+# 프록시 환경 변수 설정
+#ENV HTTP_PROXY=http://localhost:8080
+#ENV HTTPS_PROXY=http://localhost:3000
+
 # 작업 디렉토리 설정
 ARG JAR_FILE=*.jar
 
