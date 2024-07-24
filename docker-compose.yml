@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  web:
+ web:
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -13,7 +13,7 @@ services:
       #- HTTPS_PROXY=http://your-proxy-server:port
       #- NO_PROXY=localhost,127.0.0.1
 
-  api:
+ api:
     build:
       context: ./backend
       dockerfile: Dockerfile
