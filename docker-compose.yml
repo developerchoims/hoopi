@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: react-app
+    ports:
+      - "3000:80"
+    #environment:
+      #- HTTP_PROXY=http://your-proxy-server:port
+      #- HTTPS_PROXY=http://your-proxy-server:port
+      #- NO_PROXY=localhost,127.0.0.1
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: springboot-app
+    ports:
+      - "8080:8080"
+    #environment:
+      #- HTTP_PROXY=http://your-proxy-server:port
+      #- HTTPS_PROXY=http://your-proxy-server:port
+      #- NO_PROXY=localhost,127.0.0.1
