@@ -34,7 +34,7 @@ jobs:
         chmod +x ./gradlew
         ./gradlew clean build -x test
 
-    - name: Deploy to server
+    - name: Copy Docker files
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
