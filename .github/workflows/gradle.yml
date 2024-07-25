@@ -48,7 +48,13 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: 22
         script: |
-          docker rm -f $(docker ps -qa) || true
-          docker pull ${{ secrets.DOCKER_REPO }}/hoopitest
-          docker-compose up --build -d
-          docker image prune -f
+          # Stop and remove all running containers
+          sudo docker rm -f $(sudo docker ps -qa) || true
+          # Pull the latest Docker image
+          sudo docker pull ${{ secrets.DOCKER_REPO }}/hoopitest
+          # Navigate to the directory containing docker-compose.yml
+          cd /home/ec2-user
+          # Start the containers as per docker-compose.yml
+          sudo docker-compose up -d
+          # Clean up unused Docker images
+          sudo docker image prune -f
