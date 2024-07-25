@@ -48,11 +48,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: 22
         script: |
-          # Stop and remove all running containers (with a fallback to handle no containers)
           docker rm -f $(docker ps -qa) || true
-          # Pull the latest Docker image
           docker pull ${{ secrets.DOCKER_REPO }}/hoopitest
-          # Start the containers as per docker-compose.yml
           docker-compose up --build -d
-          # Clean up unused Docker images
           docker image prune -f
