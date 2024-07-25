@@ -8,6 +8,8 @@ on:
 
 permissions:
   contents: read
+  id-token: write
+  actions: write
 
 jobs:
   build:
@@ -34,21 +36,22 @@ jobs:
         chmod +x ./gradlew
         ./gradlew clean build -x test
 
-    - name: Copy Docker files
+    - name: Docker build & push to Docker repository
+      run: |
+        echo "${{ secrets.DOCKER_PWD }}" | docker login -u "${{ secrets.DOCKER_ID }}" --password-stdin
+        docker build -f Dockerfile -t "${{ secrets.DOCKER_REPO }}/hoopitest" .
+        docker push "${{ secrets.DOCKER_REPO }}/hoopitest"
+
+    - name: Copy Docker files to server
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ec2-user
         key: ${{ secrets.SSH_KEY }}
         port: 22
-        source: "./Dockerfile,./docker-compose.yml"
-        target: "/home/ec2-user"
-        
-    - name: Docker build & push to Docker repository
-      run: |
-        echo "${{ secrets.DOCKER_PWD }}" | docker login -u "${{ secrets.DOCKER_ID }}" --password-stdin
-        docker build -f Dockerfile -t "${{ secrets.DOCKER_REPO }}/hoopitest" .
-        docker push "${{ secrets.DOCKER_REPO }}/hoopitest"
+        script: |
+          # Copy Dockerfile and docker-compose.yml to the server
+          scp -i ${{ secrets.SSH_KEY }} -o StrictHostKeyChecking=no Dockerfile docker-compose.yml ec2-user@${{ secrets.SSH_HOST }}:/home/ec2-user
 
     - name: Deploy to server
       uses: appleboy/ssh-action@master
@@ -59,12 +62,12 @@ jobs:
         port: 22
         script: |
           # Stop and remove all running containers
-          sudo docker rm -f $(docker ps -qa)
+          sudo docker rm -f $(docker ps -qa) || true
           # Pull the latest Docker image
           sudo docker pull ${{ secrets.DOCKER_REPO }}/hoopitest
           # Navigate to the directory containing docker-compose.yml
-          cd /path/to/your/docker-compose
+          cd /home/ec2-user
           # Start the containers as per docker-compose.yml
-          docker-compose up -d
+          sudo docker-compose up -d
           # Clean up unused Docker images
-          docker image prune -f
+          sudo docker image prune -f
