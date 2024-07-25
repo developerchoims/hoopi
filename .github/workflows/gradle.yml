@@ -1,0 +1,57 @@
+name: Java CI/CD with Gradle and Docker
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Java 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'corretto'
+
+    - name: Create application.yml
+      run: |
+        cd ./src/main/resources
+        echo "${{ secrets.PROPERTIES }}" > application.yml
+      shell: bash
+
+    - name: Build with Gradle
+      run: |
+        chmod +x ./gradlew
+        ./gradlew clean build -x test
+
+    - name: Docker build & push to Docker repository
+      run: |
+        echo "${{ secrets.DOCKER_PWD }}" | docker login -u "${{ secrets.DOCKER_ID }}" --password-stdin
+        docker build -f Dockerfile -t "${{ secrets.DOCKER_REPO }}/hoopitest:latest" .
+        docker push "${{ secrets.DOCKER_REPO }}/hoopitest:latest"
+        
+    - name: Deploy to server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ec2-user
+        key: ${{ secrets.SSH_KEY }}
+        port: 22
+        script: |
+          # Stop and remove all running containers
+          docker rm -f $(sudo docker ps -qa) || true
+          # Pull the latest Docker image
+          docker pull ${{ secrets.DOCKER_REPO }}/hoopitest:latest
+          # Start the containers as per docker-compose.yml
+          docker run -d --name hoopi-app -p 8080:8080 ${{ secrets.DOCKER_REPO }}/hoopitest:latest
+          docker image prune -f
