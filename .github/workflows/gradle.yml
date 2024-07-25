@@ -50,9 +50,10 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: 22
         script: |
-          # Copy Dockerfile and docker-compose.yml to the server
+          echo "Copying Docker files to the server..."
           scp -i ${{ secrets.SSH_KEY }} -o StrictHostKeyChecking=no Dockerfile docker-compose.yml ec2-user@${{ secrets.SSH_HOST }}:/home/ec2-user
-
+          echo "Docker files copied successfully."
+          
     - name: Deploy to server
       uses: appleboy/ssh-action@master
       with:
