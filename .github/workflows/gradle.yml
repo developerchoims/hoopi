@@ -38,7 +38,7 @@ jobs:
       run: |
         echo "${{ secrets.DOCKER_PWD }}" | docker login -u "${{ secrets.DOCKER_ID }}" --password-stdin
         docker build -f Dockerfile -t "${{ secrets.DOCKER_REPO }}/hoopitest" .
-        docker push "${{ secrets.DOCKER_REPO }}/directors-dev"
+        docker push "${{ secrets.DOCKER_REPO }}/hoopitest"
 
     - name: Deploy to server
       uses: appleboy/ssh-action@master
