@@ -37,7 +37,7 @@ jobs:
     - name: Docker build & push to Docker repository
       run: |
         echo "${{ secrets.DOCKER_PWD }}" | docker login -u "${{ secrets.DOCKER_ID }}" --password-stdin
-        docker build -f Dockerfile -t "${{ secrets.DOCKER_REPO }}/directors-dev" .
+        docker build -f Dockerfile -t "${{ secrets.DOCKER_REPO }}/hoopiTest" .
         docker push "${{ secrets.DOCKER_REPO }}/directors-dev"
 
     - name: Deploy to server
@@ -48,8 +48,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: 22
         script: |
-          cd /home/ec2-user
-          sudo docker-compose rm -f $(docker ps -qa)
-          sudo docker-compose pull ${{ secrets.DOCKER_REPO }}/directors-dev
-          docker-compose up -d
-          docker-compose image prune -f
+         sudo docker rm -f $(docker ps -qa)
+         sudo docker pull ${{ secrets.DOCKER_REPO }}/hoopiTest
+         docker-compose up -d
+         docker image prune -f
