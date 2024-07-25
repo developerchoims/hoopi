@@ -48,6 +48,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: 22
         script: |
+          cd /home/ec2-user
           sudo docker rm -f $(docker ps -qa)
           sudo docker pull ${{ secrets.DOCKER_REPO }}/directors-dev
           docker-compose up -d
