@@ -53,6 +53,6 @@ jobs:
           # Pull the latest Docker image
           docker pull ${{ secrets.DOCKER_REPO }}/hoopitest
           # Start the containers as per docker-compose.yml
-          docker-compose up -d
+          docker-compose up --build -d
           # Clean up unused Docker images
           docker image prune -f
